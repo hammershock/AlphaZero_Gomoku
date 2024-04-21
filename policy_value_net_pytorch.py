@@ -57,7 +57,7 @@ class Net(nn.Module):
         return x_act, x_val
 
 
-class PolicyValueNet():
+class PolicyValueNet:
     """policy-value network """
     def __init__(self, board_width, board_height,
                  model_file=None, use_gpu=False):
@@ -83,7 +83,7 @@ class PolicyValueNet():
         output: a batch of action probabilities and state values
         """
         if self.use_gpu:
-            state_batch = Variable(torch.FloatTensor(state_batch).cuda())
+            state_batch = torch.FloatTensor(np.array(state_batch)).cuda()
             log_act_probs, value = self.policy_value_net(state_batch)
             act_probs = np.exp(log_act_probs.data.cpu().numpy())
             return act_probs, value.data.cpu().numpy()
@@ -119,9 +119,9 @@ class PolicyValueNet():
         """perform a training step"""
         # wrap in Variable
         if self.use_gpu:
-            state_batch = Variable(torch.FloatTensor(state_batch).cuda())
-            mcts_probs = Variable(torch.FloatTensor(mcts_probs).cuda())
-            winner_batch = Variable(torch.FloatTensor(winner_batch).cuda())
+            state_batch = torch.FloatTensor(np.array(state_batch)).cuda()
+            mcts_probs = torch.FloatTensor(np.array(mcts_probs)).cuda()
+            winner_batch = torch.FloatTensor(np.array(winner_batch)).cuda()
         else:
             state_batch = Variable(torch.FloatTensor(state_batch))
             mcts_probs = Variable(torch.FloatTensor(mcts_probs))
@@ -146,9 +146,9 @@ class PolicyValueNet():
         entropy = -torch.mean(
                 torch.sum(torch.exp(log_act_probs) * log_act_probs, 1)
                 )
-        return loss.data[0], entropy.data[0]
+        # return loss.data[0], entropy.data[0]
         #for pytorch version >= 0.5 please use the following line instead.
-        #return loss.item(), entropy.item()
+        return loss.item(), entropy.item()
 
     def get_policy_param(self):
         net_params = self.policy_value_net.state_dict()
@@ -156,5 +156,6 @@ class PolicyValueNet():
 
     def save_model(self, model_file):
         """ save model params to file """
+        print(f'model saved to {model_file}')
         net_params = self.get_policy_param()  # get model params
         torch.save(net_params, model_file)

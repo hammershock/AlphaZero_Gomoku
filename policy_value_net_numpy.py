@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Implement the policy value network using numpy, so that we can play with the
-trained AI model without installing any DL framwork
+trained AI model without installing any DL framework
 
 @author: Junxiao Song
 """
@@ -82,7 +82,7 @@ def im2col_indices(x, field_height, field_width, padding=1, stride=1):
     return cols
 
 
-class PolicyValueNetNumpy():
+class PolicyValueNetNumpy:
     """policy-value network in numpy """
     def __init__(self, board_width, board_height, net_params):
         self.board_width = board_width

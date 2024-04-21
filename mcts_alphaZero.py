@@ -9,6 +9,8 @@ network to guide the tree search and evaluate the leaf nodes
 import numpy as np
 import copy
 
+from player import Player
+
 
 def softmax(x):
     probs = np.exp(x - np.max(x))
@@ -121,7 +123,7 @@ class MCTS(object):
         # for the current player.
         action_probs, leaf_value = self._policy(state)
         # Check for end of game.
-        end, winner = state.game_end()
+        end, winner = state.check_end()
         if not end:
             node.expand(action_probs)
         else:
@@ -168,13 +170,14 @@ class MCTS(object):
         return "MCTS"
 
 
-class MCTSPlayer(object):
+class MCTSPlayer(Player):
     """AI player based on MCTS"""
 
     def __init__(self, policy_value_function,
                  c_puct=5, n_playout=2000, is_selfplay=0):
         self.mcts = MCTS(policy_value_function, c_puct, n_playout)
         self._is_selfplay = is_selfplay
+        self.player = None
 
     def set_player_ind(self, p):
         self.player = p
